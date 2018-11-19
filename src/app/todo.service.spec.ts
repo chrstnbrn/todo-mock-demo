@@ -10,8 +10,8 @@ import { UserService } from './user.service';
 describe('TodoService', () => {
 
   let todoService: TodoService;
-  let dataServiceMock: Partial<TodoDataService>;
-  let userServiceMock: UserService;
+  let dataServiceMock: jest.Mocked<Partial<TodoDataService>>;
+  let userServiceStub: UserService;
 
   beforeEach(() => {
     dataServiceMock = {
@@ -19,11 +19,11 @@ describe('TodoService', () => {
       updateTodo: jest.fn()
     };
 
-    userServiceMock = {
+    userServiceStub = {
       currentUser: new User(1, 'testuser')
     };
 
-    todoService = new TodoService(<TodoDataService>dataServiceMock, userServiceMock);
+    todoService = new TodoService(dataServiceMock as unknown as TodoDataService, userServiceStub);
   });
 
   it('getTodosCreatedByUser should filter todos by user id', async(() => {
@@ -33,7 +33,7 @@ describe('TodoService', () => {
       new Todo(3, 'Write blog post', false, 1)
     ];
 
-    (dataServiceMock.getTodos as jest.Mock).mockReturnValue(of(todos));
+    dataServiceMock.getTodos.mockReturnValue(of(todos));
 
     const expected = [
       todos[0],
@@ -46,7 +46,7 @@ describe('TodoService', () => {
 
   it('markAsDone should update todo', () => {
     const todo = new Todo(1, 'Write tests', false, 1);
-    (dataServiceMock.updateTodo as jest.Mock).mockReturnValue(empty());
+    dataServiceMock.updateTodo.mockReturnValue(empty());
 
     todoService.markAsDone(todo).subscribe();
 
