@@ -7,6 +7,14 @@ import { User } from './user';
 })
 export class UserService {
 
-  currentUser: User;
+  get currentUser(): User {
+    return this._user;
+  }
+
+  private _user: User;
+
+  logIn() {
+    this._user = new User(123, 'dummyuser');
+  }
 
 }
