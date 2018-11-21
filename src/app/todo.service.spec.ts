@@ -1,8 +1,7 @@
 import { async } from '@angular/core/testing';
-import createMockInstance from 'jest-create-mock-instance';
 import { EMPTY, of } from 'rxjs';
+import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 
-import { mockGetter } from './mock-getter';
 import { Todo } from './todo';
 import { TodoDataService } from './todo-data.service';
 import { TodoService } from './todo.service';
@@ -12,14 +11,14 @@ import { UserService } from './user.service';
 describe('TodoService', () => {
 
   let todoService: TodoService;
-  let dataServiceMock: jest.Mocked<TodoDataService>;
-  let userServiceMock: jest.Mocked<UserService>;
+  let dataServiceMock: TodoDataService;
+  let userServiceMock: UserService;
 
   beforeEach(() => {
-    dataServiceMock = createMockInstance(TodoDataService);
-    userServiceMock = createMockInstance(UserService);
+    dataServiceMock = mock(TodoDataService);
+    userServiceMock = mock(UserService);
 
-    todoService = new TodoService(dataServiceMock, userServiceMock);
+    todoService = new TodoService(instance(dataServiceMock), instance(userServiceMock));
   });
 
   it('getTodosCreatedByUser should filter todos by user id', async(() => {
@@ -28,10 +27,10 @@ describe('TodoService', () => {
       new Todo(2, 'Todo 2', false, 2),
       new Todo(3, 'Todo 3', false, 1)
     ];
-    dataServiceMock.getTodos.mockReturnValue(of(todos));
+    when(dataServiceMock.getTodos()).thenReturn(of(todos));
 
     const user = new User(1, 'testuser');
-    mockGetter(userServiceMock, 'currentUser', user);
+    when(userServiceMock.currentUser).thenReturn(user);
 
     todoService.getTodosCreatedByUser()
       .subscribe(result => expect(result).toEqual([todos[0], todos[2]]));
@@ -39,11 +38,11 @@ describe('TodoService', () => {
 
   it('markAsDone should update todo', () => {
     const todo = new Todo(1, 'Todo 1', false, 1);
-    dataServiceMock.updateTodo.mockReturnValue(EMPTY);
+    when(dataServiceMock.updateTodo(anything())).thenReturn(EMPTY);
 
     todoService.markAsDone(todo).subscribe();
 
     const expected = new Todo(1, 'Todo 1', true, 1);
-    expect(dataServiceMock.updateTodo).toHaveBeenCalledWith(expected);
+    verify(dataServiceMock.updateTodo(deepEqual(expected))).once();
   });
 });
