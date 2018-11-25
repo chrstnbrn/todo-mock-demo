@@ -1,6 +1,8 @@
 import { async } from '@angular/core/testing';
+import createMockInstance from 'jest-create-mock-instance';
 import { empty, of } from 'rxjs';
 
+import { mockGetter } from './mock-getter';
 import { Todo } from './todo';
 import { TodoDataService } from './todo-data.service';
 import { TodoService } from './todo.service';
@@ -10,20 +12,14 @@ import { UserService } from './user.service';
 describe('TodoService', () => {
 
   let todoService: TodoService;
-  let dataServiceMock: jest.Mocked<Partial<TodoDataService>>;
-  let userServiceMock: jest.Mocked<Partial<UserService>>;
+  let dataServiceMock: jest.Mocked<TodoDataService>;
+  let userServiceMock: jest.Mocked<UserService>;
 
   beforeEach(() => {
-    dataServiceMock = {
-      getTodos: jest.fn(),
-      updateTodo: jest.fn()
-    };
+    dataServiceMock = createMockInstance(TodoDataService);
+    userServiceMock = createMockInstance(UserService);
 
-    userServiceMock = {};
-
-    todoService = new TodoService(
-      dataServiceMock as unknown as TodoDataService,
-      userServiceMock as unknown as UserService);
+    todoService = new TodoService(dataServiceMock, userServiceMock);
   });
 
   it('getTodosCreatedByUser should filter todos by user id', async(() => {
@@ -35,7 +31,7 @@ describe('TodoService', () => {
     dataServiceMock.getTodos.mockReturnValue(of(todos));
 
     const user = new User(1, 'testuser');
-    Object.defineProperty(userServiceMock, 'currentUser', { get: jest.fn(() => user) });
+    mockGetter(userServiceMock, 'currentUser', user);
 
     const expected = [
       todos[0],
