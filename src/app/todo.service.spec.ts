@@ -43,6 +43,6 @@ describe('TodoService', () => {
     todoService.markAsDone(todo).subscribe();
 
     const expected = new Todo(1, 'Todo 1', true, 1);
-    verify(dataServiceMock.updateTodo(deepEqual(expected))).once();
+    verify(dataServiceMock.updateTodo(deepEqual(expected))).called();
   });
 });
