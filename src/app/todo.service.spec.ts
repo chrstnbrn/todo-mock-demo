@@ -1,6 +1,6 @@
 import { async } from '@angular/core/testing';
 import createMockInstance from 'jest-create-mock-instance';
-import { empty, of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 
 import { mockGetter } from './mock-getter';
 import { Todo } from './todo';
@@ -33,18 +33,13 @@ describe('TodoService', () => {
     const user = new User(1, 'testuser');
     mockGetter(userServiceMock, 'currentUser', user);
 
-    const expected = [
-      todos[0],
-      todos[2]
-    ];
-
     todoService.getTodosCreatedByUser()
-      .subscribe(actual => expect(actual).toEqual(expected));
+      .subscribe(result => expect(result).toEqual([todos[0], todos[2]]));
   }));
 
   it('markAsDone should update todo', () => {
     const todo = new Todo(1, 'Write tests', false, 1);
-    dataServiceMock.updateTodo.mockReturnValue(empty());
+    dataServiceMock.updateTodo.mockReturnValue(EMPTY);
 
     todoService.markAsDone(todo).subscribe();
 
