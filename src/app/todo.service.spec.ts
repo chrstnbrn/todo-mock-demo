@@ -24,9 +24,9 @@ describe('TodoService', () => {
 
   it('getTodosCreatedByUser should filter todos by user id', async(() => {
     const todos = [
-      new Todo(1, 'Write tests', false, 1),
-      new Todo(2, 'Improve tests', false, 2),
-      new Todo(3, 'Write blog post', false, 1)
+      new Todo(1, 'Todo 1', false, 1),
+      new Todo(2, 'Todo 2', false, 2),
+      new Todo(3, 'Todo 3', false, 1)
     ];
     dataServiceMock.getTodos.mockReturnValue(of(todos));
 
@@ -38,12 +38,12 @@ describe('TodoService', () => {
   }));
 
   it('markAsDone should update todo', () => {
-    const todo = new Todo(1, 'Write tests', false, 1);
+    const todo = new Todo(1, 'Todo 1', false, 1);
     dataServiceMock.updateTodo.mockReturnValue(EMPTY);
 
     todoService.markAsDone(todo).subscribe();
 
-    const expected = new Todo(1, 'Write tests', true, 1);
+    const expected = new Todo(1, 'Todo 1', true, 1);
     expect(dataServiceMock.updateTodo).toHaveBeenCalledWith(expected);
   });
 });
