@@ -1,7 +1,6 @@
 import { async } from '@angular/core/testing';
-import { of, EMPTY } from 'rxjs';
-import * as TypeMoq from 'typemoq';
-import { Times } from 'typemoq';
+import { EMPTY, of } from 'rxjs';
+import { IMock, It, Mock, Times } from 'typemoq';
 
 import { Todo } from './todo';
 import { TodoDataService } from './todo-data.service';
@@ -12,12 +11,12 @@ import { UserService } from './user.service';
 describe('TodoService', () => {
 
   let todoService: TodoService;
-  let dataServiceMock: TypeMoq.IMock<TodoDataService>;
-  let userServiceMock: TypeMoq.IMock<UserService>;
+  let dataServiceMock: IMock<TodoDataService>;
+  let userServiceMock: IMock<UserService>;
 
   beforeEach(() => {
-    dataServiceMock = TypeMoq.Mock.ofType(TodoDataService);
-    userServiceMock = TypeMoq.Mock.ofType(UserService);
+    dataServiceMock = Mock.ofType(TodoDataService);
+    userServiceMock = Mock.ofType(UserService);
 
     todoService = new TodoService(dataServiceMock.object, userServiceMock.object);
   });
@@ -39,11 +38,11 @@ describe('TodoService', () => {
 
   it('markAsDone should update todo', () => {
     const todo = new Todo(1, 'Todo 1', false, 1);
-    dataServiceMock.setup(x => x.updateTodo(TypeMoq.It.isAny())).returns(() => EMPTY);
+    dataServiceMock.setup(x => x.updateTodo(It.isAny())).returns(() => EMPTY);
 
     todoService.markAsDone(todo).subscribe();
 
     const expected = new Todo(1, 'Todo 1', true, 1);
-    dataServiceMock.verify(x => x.updateTodo(expected), Times.atLeastOnce());
+    dataServiceMock.verify(x => x.updateTodo(expected), Times.once());
   });
 });
